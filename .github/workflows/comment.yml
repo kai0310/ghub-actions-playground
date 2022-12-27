@@ -8,8 +8,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Comment PR
+      - name: Comment on PR
+        if: github.event_name != 'pull_request'
         uses: thollander/actions-comment-pull-request@v2
         with:
           message: |
             Hello world ! :wave:
+      - name: Comment on Commit
+        if: github.event_name != 'push'
+        run: |
+          jq -nc '{"body": "test comment"}' | \
+          curl -sL  -X POST -d @- \
+            -H "Content-Type: application/json" \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/comments"
