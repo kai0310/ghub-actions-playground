@@ -12,7 +12,12 @@ jobs:
         if: github.event_name == 'pull_request'
         uses: thollander/actions-comment-pull-request@v2
         with:
-          message: ${{ (success() && 'successful') || (failure() && 'fail') || 'cancelled' }}
+          - if: success()
+            message: successful
+          - if: failure()
+            message: fail'
+
+
       - name: Comment on Commit
         if: github.event_name == 'push'
         run: |
